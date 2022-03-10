@@ -16,7 +16,7 @@ HF
 #define SERVICE_UUID "4fafc201-1fb5-459e-8fcc-c5c9c331914b"
 #define CHARACTERISTIC_UUID "beb5483e-36e1-4688-b7f5-ea07361b26a8"
 #define CHARACTERISTIC_UUID1 "beb5483e-36e1-4688-b7f5-ea07361b26a9"
-
+bool bleManagerOn = false;
 class MySecurity : public BLESecurityCallbacks
 {
 
@@ -100,11 +100,12 @@ class MySecurity : public BLESecurityCallbacks
   }
 };
 void setup()
-{
+{ 
   Serial.begin(115200);
   Serial.println("Starting BLE work!");
 
   BLEDevice::init("ESP32");
+  bleManagerOn=true;
   /*
      Required in authentication process to provide displaying and/or input passkey or yes/no butttons confirmation
   */
@@ -141,7 +142,16 @@ void setup()
 
       Serial.println("New Value Has Been Written From Different Characteristic");
       std::string rxValue = pCharacteristic->getValue();
-      // Serial.println(rxValue);
+      std::cout << rxValue << std::endl;
+      if (rxValue == "close")
+      {
+        std::cout << "BLE MANAGER Will Turned Off"<<std::endl;
+        bleManagerOn=false;
+        BLEDevice::deinit();
+        std::cout<<"Will I Be Written"<< std::endl;
+ 
+
+      }
     }
   };
 
@@ -174,7 +184,7 @@ void setup()
       //     Serial.print(":");
       //   }
 
-      // } 
+      // }
       /*pMyDevice->deviceConnected = true;
             initialConnection = true;
             std::cout<<"Initial Connection Made"<<std::endl;*/
@@ -221,6 +231,12 @@ void setup()
 
 void loop()
 {
-  // put your main code here, to run repeatedly:
+  if(bleManagerOn==false){
+    std::cout << "BLE MANAGER WILL BE STARTED!!!"<<std::endl;
+    delay(5000);
+    BLEDevice::init("ESP32");
+
+    bleManagerOn=true;
+  }
   delay(2000);
 }
